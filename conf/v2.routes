@@ -1,0 +1,20 @@
+GET   /                                               controllers.APIController.isThere()
+
+GET     /tags                                         controllers.APIController.getTags
+
+GET     /tags/:tagId                                  controllers.APIController.getTag(tagId: String)
+
+POST    /tags                                         controllers.APIController.insertTag()
+
+GET     /tags/search                                  controllers.APIController.searchTags(q: String)
+
+GET     /texts                                        controllers.APIController.getTexts(tag: Option[String], version: Option[Int], limit: Option[Int])
+
+GET     /texts/:textId                                controllers.APIController.getText(textId: String)
+
+POST    /texts                                        controllers.APIController.insertText
+
+GET     /texts/search                                 controllers.APIController.searchTexts(q: String, tag: Option[String])
+
+#preflight route for browser in CORS
+OPTIONS        /*path                                 controllers.APIController.options(path: String)

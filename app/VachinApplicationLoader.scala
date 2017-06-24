@@ -59,8 +59,8 @@ class ApiComponents(context: Context) extends BuiltInComponentsFromContext(conte
 
   lazy val apiController = new APIController(apiDataService, logger)
 
-  //lazy val appRoutes = new  routes.Routes(httpErrorHandler, apiController)
+  lazy val apiRoutesVersion1 = new v2.Routes(httpErrorHandler, apiController)
 
-  lazy val router = new Routes(httpErrorHandler, apiController)
+  lazy val router = new Routes(httpErrorHandler, apiRoutesVersion1)
 
 }

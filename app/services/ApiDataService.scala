@@ -49,16 +49,14 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
   }
 
   def insertText(textRequestModel: TextRequestModel) = {
-    val stripLength = if(textRequestModel.text.length > 100) 100 else textRequestModel.text.length
-    val textId = textRequestModel.text.replace(" ", "_").substring(0, stripLength)
-    textDao.find(textId).flatMap(someTextModel => {
+
+    textDao.find(TextRequestModel.getTextId(textRequestModel.text)).flatMap(someTextModel => {
       if(someTextModel.isDefined){
         Future{
           false
         }
       }else{
-        val textModel = TextModel(textId, textRequestModel.text, 0, textRequestModel.by, textRequestModel.tags)
-        textDao.insert(textModel).map(inserted =>
+        textDao.insert(TextRequestModel.toTextModel(textRequestModel)).map(inserted =>
           inserted
         )
       }

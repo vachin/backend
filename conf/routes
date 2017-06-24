@@ -1,4 +1,1 @@
-GET   /                                               controllers.APIController.isThere()
-
-#preflight route for browser in CORS
-OPTIONS        /*path                                 controllers.APIController.options(path: String)
+->      /v1/api     v2.Routes

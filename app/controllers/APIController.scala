@@ -1,6 +1,6 @@
 package controllers
 
-import Models.TextRequestModel
+import Models.{TagRequestModel, TextRequestModel}
 import org.slf4j.Logger
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
@@ -16,49 +16,40 @@ class APIController(dataService: ApiDataService, logger: Logger) extends Control
     Ok("Version 0.0.1")
   }
 
-  /*def getCategories() = Action.async {
-    dataService.getCategories().map { result =>
-      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
-    }
-  }
-
-  def getMessages(categoryId: String, count: Int, page: Int) = Action.async {
-    dataService.getMessages(categoryId, count, page)   .map { result =>
-      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
-    }
-  }
-
-  def searchMessage(q: String, categoryId: Option[String]) = Action.async {
-    dataService.searchMessage(q, categoryId) map { result =>
-      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
-    }
-  }
-
-  def updateMessageUsedCount(categoryId: String, messageId: String) = Action.async {
-    dataService.updateMessageUsedCount( categoryId, messageId) map { result =>
-      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
-    }
-  }*/
-
   def getTags = Action.async {
     dataService.getTags().map(result =>
       Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
     )
   }
 
+  def getTag(tagId: String) = Action.async {
+    dataService.findTag(tagId).map(result =>
+      if(result.isDefined)
+        Ok(Json.toJson(result.get)).withHeaders("access-control-allow-origin" -> "*")
+      else
+        NoContent.withHeaders("access-control-allow-origin" -> "*")
+    )
+  }
+
   def insertTag() = Action.async(parse.json) { implicit request =>
-    val textRequestModelOpt = request.body.validate[TextRequestModel]
-    val textRequestModel = textRequestModelOpt match {
+    val tagRequestModelOpt = request.body.validate[TagRequestModel]
+    val tagRequestModel = tagRequestModelOpt match {
       case error: JsError => logger.warn("Errors: " + JsError.toJson(error)); None
-      case model: JsSuccess[_] => Some(model.get.asInstanceOf[TextRequestModel])
+      case model: JsSuccess[_] => Some(model.get.asInstanceOf[TagRequestModel])
     }
-    if(textRequestModel.isDefined) {
-      dataService.insertText(textRequestModel.get).map(result =>
+    if(tagRequestModel.isDefined) {
+      dataService.insertTag(tagRequestModel.get).map(result =>
         Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
       )
     }else{
       Future(BadRequest.withHeaders("access-control-allow-origin" -> "*"))
     }
+  }
+
+  def searchTags(q: String) = Action.async {
+    dataService.searchTags(q).map(result =>
+      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+    )
   }
 
   def updateTag(tag: String) = Action.async(parse.json) { implicit request =>

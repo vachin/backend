@@ -27,7 +27,7 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
 
   def find(tag: Option[String], version: Int, limit: Int): Future[List[TextModel]] = {
 
-    val query =  Json.obj("tags" -> tag)
+    val query =  if(tag.isDefined) Json.obj("tags" -> tag) else Json.obj()
     collection.find(query).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit)
 
   }
