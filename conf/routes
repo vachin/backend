@@ -1,13 +1,4 @@
-GET   /test                                           controllers.APIController.getById()
-
-GET   /categories                                     controllers.APIController.getCategories()
-
-GET   /categories/:categoryId/messages                controllers.APIController.getMessages(categoryId: String, count: Int ?= 20,  page: Int ?= 1)
-
-#FIXME
-GET   /categories/:categoryId/messages/count          controllers.APIController.updateMessageUsedCount(categoryId: String, messageId: String)
-
-GET   /messages/search                                controllers.APIController.searchMessage(q: String, categoryId: Option[String])
+GET   /                                               controllers.APIController.isThere()
 
 #preflight route for browser in CORS
 OPTIONS        /*path                                 controllers.APIController.options(path: String)

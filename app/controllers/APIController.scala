@@ -9,11 +9,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class APIController(dataService: ApiDataService, logger: Logger) extends Controller {
 
-  def getById() = Action {
-    Ok("hi")
+  def isThere() = Action {
+    Ok("Version 0.0.1")
   }
 
-  def getCategories() = Action.async {
+  /*def getCategories() = Action.async {
     dataService.getCategories().map { result =>
       Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
     }
@@ -35,7 +35,7 @@ class APIController(dataService: ApiDataService, logger: Logger) extends Control
     dataService.updateMessageUsedCount( categoryId, messageId) map { result =>
       Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
     }
-  }
+  }*/
 
 
 

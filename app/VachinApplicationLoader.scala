@@ -1,5 +1,5 @@
 import controllers.APIController
-import dao.impl.{CategoryDaoMongo, MessageDaoMongo}
+import dao.impl.{TagDAOMongo, TextDAOMongo}
 import services.ApiDataService
 import org.slf4j.LoggerFactory
 import play.api.{ApplicationLoader, BuiltInComponentsFromContext, LoggerConfigurator}
@@ -15,8 +15,7 @@ import scala.concurrent.Future
 import router.Routes
 import scala.concurrent.ExecutionContext.Implicits.global._
 
-
-class VachinLoader extends ApplicationLoader {
+class VachinApplicationLoader extends ApplicationLoader {
   def load(context: Context) = {
     LoggerConfigurator(context.environment.classLoader).foreach{
       _.configure(context.environment)
@@ -28,6 +27,7 @@ class VachinLoader extends ApplicationLoader {
 class ApiComponents(context: Context) extends BuiltInComponentsFromContext(context)  with AhcWSComponents {
 
   val mongoURI = configuration.getString("mongo.db.uri").get
+  val dbName = configuration.getString("mongo.db.name").get
 
   def tryConnection(driver: reactivemongo.api.MongoDriver): Try[MongoConnection] =
     MongoConnection.parseURI(mongoURI).map { parsedUri =>
@@ -55,7 +55,7 @@ class ApiComponents(context: Context) extends BuiltInComponentsFromContext(conte
 
   lazy val logger = LoggerFactory.getLogger("VachinLogger")
 
-  lazy val apiDataService = new ApiDataService(new MessageDaoMongo(connection, logger), new CategoryDaoMongo(connection, logger), logger)
+  lazy val apiDataService = new ApiDataService(new TextDAOMongo(connection, dbName, logger), new TagDAOMongo(connection, dbName, logger), logger)
 
   lazy val apiController = new APIController(apiDataService, logger)
 
