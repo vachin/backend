@@ -1,6 +1,6 @@
 package dao
 
-import Models.{TagModel}
+import models.{TagModel}
 
 import scala.concurrent.Future
 

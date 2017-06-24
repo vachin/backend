@@ -1,6 +1,6 @@
 package controllers
 
-import Models.{TagRequestModel, TextRequestModel}
+import models.{TagRequestModel, TextRequestModel}
 import org.slf4j.Logger
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._

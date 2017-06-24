@@ -1,6 +1,6 @@
 package  dao
 
-import Models.{TextModel}
+import models.{TagWithCount, TextModel}
 
 import scala.concurrent.Future
 
@@ -17,5 +17,7 @@ trait TextDAO {
   def update(textId: String, textModel: TextModel): Future[Boolean]
 
   def updateLikes(textId: String): Future[Boolean]
+
+  def findTagsWithCount(version: Int, limit: Int): Future[List[TagWithCount]]
 
 }

@@ -1,4 +1,4 @@
-package Models
+package models
 
 /**
   * Created by jyothi on 24/6/17.

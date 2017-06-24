@@ -1,4 +1,4 @@
-package Models
+package models
 
 import play.api.libs.json.Json
 
@@ -32,7 +32,7 @@ object TextRequestModel {
   implicit val textRequestModelFormat = Json.format[TextRequestModel]
 
   def getTextId(text: String): String = {
-    val strippedText = text.replaceAll("[^a-zA-Z\\d\\s:]", "").replaceAll(" ", "-")
+    val strippedText = text.replaceAll("[^a-zA-Z\\d\\s:]", "").replaceAll(" ", "-").toLowerCase
     val stripLength = if(strippedText.length > 100) 100 else strippedText.length
     strippedText.substring(0, stripLength)
   }

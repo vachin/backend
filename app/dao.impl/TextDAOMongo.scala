@@ -1,12 +1,15 @@
 package dao.impl
 
-import Models.{TextModel, TextRequestModel}
+import models.{TagWithCount, TextModel, TextRequestModel}
 import dao.TextDAO
 import org.slf4j.Logger
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import reactivemongo.api.{DefaultDB, MongoConnection, QueryOpts}
 import reactivemongo.play.json.collection.JSONCollection
 import play.modules.reactivemongo.json._
+import reactivemongo.api.commands.Command
+import reactivemongo.bson.BSONString
+import reactivemongo.play.json.JSONSerializationPack
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -75,6 +78,27 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
     val updater = Json.obj("$inc" -> Json.obj("likes" -> 1))
     collection.update(query, updater, multi = true).map { lastError =>
       lastError.ok
+    }
+
+  }
+
+  override def findTagsWithCount(version: Int, limit: Int): Future[List[TagWithCount]] = {
+
+    val runner = Command.run(JSONSerializationPack)
+
+    val command = Json.obj("aggregate" -> collectionName,
+      "pipeline" -> JsArray(List(
+        Json.obj("$unwind" -> "$tags"),
+        Json.obj("$group" -> Json.obj("_id" -> "$tags", "count" -> Json.obj("$sum" -> 1)))
+      ))
+    )
+
+    runner.apply(vachinDB, runner.rawCommand(command)).one[JsValue].map { mapper =>
+      (mapper \ "result").as[List[JsValue]].map { group =>
+        val name = (group \ "_id").as[String]
+        val count = (group \ "counter").as[Int]
+        new TagWithCount(name, None, count)
+      }
     }
 
   }

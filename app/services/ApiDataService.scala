@@ -1,5 +1,5 @@
 package  services
-import Models.{TagModel, TagRequestModel, TextModel, TextRequestModel}
+import models.{TagModel, TagRequestModel, TextModel, TextRequestModel}
 import dao.{TagDAO, TextDAO}
 import dao.impl.{TagDAOMongo, TextDAOMongo}
 import org.slf4j.Logger
@@ -17,6 +17,10 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
 
   def findTag(tag: String) = {
     tagDao.find(tag)
+  }
+
+  def findTagsWithCount(version: Int = 1, limit: Int = 20) = {
+    textDao.findTagsWithCount(version, limit)
   }
 
   def searchTags(q: String) = {

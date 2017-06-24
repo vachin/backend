@@ -1,6 +1,6 @@
 package dao.impl
 
-import Models.TagModel
+import models.TagModel
 import dao.TagDAO
 import org.slf4j.Logger
 import play.api.libs.json.{JsObject, Json}
