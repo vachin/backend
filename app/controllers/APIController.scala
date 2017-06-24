@@ -1,10 +1,13 @@
 package controllers
 
+import Models.TextRequestModel
 import org.slf4j.Logger
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
 import services.ApiDataService
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 
 class APIController(dataService: ApiDataService, logger: Logger) extends Controller {
@@ -36,6 +39,80 @@ class APIController(dataService: ApiDataService, logger: Logger) extends Control
       Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
     }
   }*/
+
+  def getTags = Action.async {
+    dataService.getTags().map(result =>
+      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+    )
+  }
+
+  def insertTag() = Action.async(parse.json) { implicit request =>
+    val textRequestModelOpt = request.body.validate[TextRequestModel]
+    val textRequestModel = textRequestModelOpt match {
+      case error: JsError => logger.warn("Errors: " + JsError.toJson(error)); None
+      case model: JsSuccess[_] => Some(model.get.asInstanceOf[TextRequestModel])
+    }
+    if(textRequestModel.isDefined) {
+      dataService.insertText(textRequestModel.get).map(result =>
+        Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+      )
+    }else{
+      Future(BadRequest.withHeaders("access-control-allow-origin" -> "*"))
+    }
+  }
+
+  def updateTag(tag: String) = Action.async(parse.json) { implicit request =>
+    val description = (request.body \ "description").validate[String].asOpt
+    if(description.isDefined) {
+      dataService.updateTag(tag, description.get).map(result =>
+        Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+      )
+    }else{
+      Future(BadRequest.withHeaders("access-control-allow-origin" -> "*"))
+    }
+  }
+
+  def deleteTag(tag: String) = Action.async {
+    dataService.deleteTag(tag).map(result =>
+      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+    )
+  }
+
+  def getText(textId: String) = Action.async {
+    dataService.findText(textId).map(result =>
+      if(result.isDefined)
+        Ok(Json.toJson(result.get)).withHeaders("access-control-allow-origin" -> "*")
+      else
+        NoContent.withHeaders("access-control-allow-origin" -> "*")
+    )
+  }
+
+  def getTexts(tag: Option[String], version: Option[Int], limit: Option[Int]) = Action.async {
+    dataService.findTexts(tag, version.getOrElse(1), limit.getOrElse(20)).map(result =>
+      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+    )
+  }
+
+  def searchTexts(q: String, tag: Option[String]) = Action.async {
+    dataService.searchTexts(q, tag).map(result =>
+      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+    )
+  }
+
+  def insertText() = Action.async(parse.json) { implicit request =>
+    val textRequestModelOpt = request.body.validate[TextRequestModel]
+    val textRequestModel = textRequestModelOpt match {
+      case error: JsError => logger.warn("Errors: " + JsError.toJson(error)); None
+      case model: JsSuccess[_] => Some(model.get.asInstanceOf[TextRequestModel])
+    }
+    if(textRequestModel.isDefined) {
+      dataService.insertText(textRequestModel.get).map(result =>
+        Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+      )
+    }else{
+      Future(BadRequest.withHeaders("access-control-allow-origin" -> "*"))
+    }
+  }
 
 
 

@@ -11,6 +11,10 @@ trait TagDAO {
 
   def find(): Future[List[TagModel]]
 
+  def find(tagId: String): Future[Option[TagModel]]
+
+  def search(q: String): Future[List[TagModel]]
+
   def insert(tagModel: TagModel): Future[Boolean]
 
   def update(tagId: String, description: String): Future[Boolean]

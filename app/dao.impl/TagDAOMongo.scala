@@ -27,6 +27,20 @@ class TagDAOMongo(val connection: MongoConnection, val dbName: String, val logge
 
   }
 
+  def find(tagId: String): Future[Option[TagModel]] = {
+
+    val query = Json.obj("_id" -> tagId)
+    collection.find(query).one[TagModel]
+
+  }
+
+  override def search(q: String): Future[List[TagModel]] = {
+
+    val mainQuery = Json.obj("$text" -> Json.obj("$search" -> q))
+    collection.find(mainQuery).cursor[TagModel]().collect[List]()
+
+  }
+
   def insert(tagModel: TagModel): Future[Boolean] = {
 
     val body = Json.toJson(tagModel).as[JsObject]
