@@ -31,6 +31,12 @@ class APIController(dataService: ApiDataService, logger: Logger) extends Control
     )
   }
 
+  def getTagCounts(version: Option[Int], limit: Option[Int]) = Action.async {
+    dataService.findTagsWithCount(version, limit).map(result =>
+      Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+    )
+  }
+
   def insertTag() = Action.async(parse.json) { implicit request =>
     val tagRequestModelOpt = request.body.validate[TagRequestModel]
     val tagRequestModel = tagRequestModelOpt match {

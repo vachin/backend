@@ -89,14 +89,15 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
     val command = Json.obj("aggregate" -> collectionName,
       "pipeline" -> JsArray(List(
         Json.obj("$unwind" -> "$tags"),
-        Json.obj("$group" -> Json.obj("_id" -> "$tags", "count" -> Json.obj("$sum" -> 1)))
+        Json.obj("$group" -> Json.obj("_id" -> "$tags", "count" -> Json.obj("$sum" -> 1))),
+        Json.obj("$sort" -> Json.obj("count" -> -1))
       ))
     )
 
     runner.apply(vachinDB, runner.rawCommand(command)).one[JsValue].map { mapper =>
       (mapper \ "result").as[List[JsValue]].map { group =>
         val name = (group \ "_id").as[String]
-        val count = (group \ "counter").as[Int]
+        val count = (group \ "count").as[Int]
         new TagWithCount(name, None, count)
       }
     }

@@ -19,8 +19,8 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
     tagDao.find(tag)
   }
 
-  def findTagsWithCount(version: Int = 1, limit: Int = 20) = {
-    textDao.findTagsWithCount(version, limit)
+  def findTagsWithCount(version: Option[Int], limit: Option[Int]) = {
+    textDao.findTagsWithCount(version.getOrElse(1), limit.getOrElse(20))
   }
 
   def searchTags(q: String) = {
@@ -53,15 +53,19 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
   }
 
   def insertText(textRequestModel: TextRequestModel) = {
-
-    textDao.find(TextRequestModel.getTextId(textRequestModel.text)).flatMap(someTextModel => {
+    val textId = TextRequestModel.getTextId(textRequestModel.text)
+    textDao.find(textId).flatMap(someTextModel => {
       if(someTextModel.isDefined){
         Future{
-          false
+          ""
         }
       }else{
         textDao.insert(TextRequestModel.toTextModel(textRequestModel)).map(inserted =>
-          inserted
+          if(inserted){
+            textId
+          }else{
+            ""
+          }
         )
       }
     })
