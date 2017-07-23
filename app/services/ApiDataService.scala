@@ -40,7 +40,12 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
     tagDao.update(tagId, description)
   }
 
+  def updateViews(textId: String, viewCount: Int = 1) = {
+    textDao.updateViews(textId, viewCount)
+  }
+
   def findText(textId: String) = {
+    updateViews(textId)
     textDao.find(textId)
   }
 

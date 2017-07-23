@@ -72,10 +72,10 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
 
   }
 
-  override def updateLikes(textId: String): Future[Boolean] = {
+  override def updateViews(textId: String, viewCount: Int = 1): Future[Boolean] = {
 
     val query = Json.obj("_id" -> textId)
-    val updater = Json.obj("$inc" -> Json.obj("likes" -> 1))
+    val updater = Json.obj("$inc" -> Json.obj("views" -> viewCount))
     collection.update(query, updater, multi = true).map { lastError =>
       lastError.ok
     }

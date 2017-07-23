@@ -6,14 +6,14 @@ import play.api.libs.json.Json
   * Created by jyothi on 24/6/17.
   */
 case class TextModel(
-                       _id: String,
-                       text: String,
-                       likes: Int,
-                       //language: Option[String],
-                       tags: List[String],
-                       by: Option[String],
-                       user: Option[String],
-                       verified: Option[Boolean]
+                      _id: String,
+                      text: String,
+                      views: Int,
+                      //language: Option[String],
+                      tags: List[String],
+                      by: Option[String],
+                      user: Option[String],
+                      verified: Option[Boolean]
                     )
 
 object TextModel {
