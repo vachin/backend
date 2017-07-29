@@ -19,4 +19,7 @@ case class TextPaginatedModel(meta: PaginationModel, texts: List[TextModel])
 
 object TextPaginatedModel {
   implicit val textPaginatedModelFormat = Json.format[TextPaginatedModel]
+
+  def empty = TextPaginatedModel(PaginationModel(0, 0, 0), List.empty[TextModel])
+
 }

@@ -10,7 +10,7 @@ trait TextDAO {
 
   def find(tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel]
 
-  def search(q: String, tag: Option[String], version: Int, limit: Int): Future[List[TextPaginatedModel]]
+  def search(q: String, tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel]
 
   def insert(textModel: TextModel): Future[Boolean]
 

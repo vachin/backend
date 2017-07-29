@@ -90,8 +90,8 @@ class APIController(dataService: ApiDataService, logger: Logger) extends Control
     )
   }
 
-  def searchTexts(q: String, tag: Option[String]) = Action.async {
-    dataService.searchTexts(q, tag).map(result =>
+  def searchTexts(q: String, tag: Option[String], version: Option[Int], limit: Option[Int]) = Action.async {
+    dataService.searchTexts(q, tag, version.getOrElse(1), limit.getOrElse(10)).map(result =>
       Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
     )
   }

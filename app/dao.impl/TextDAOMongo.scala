@@ -28,16 +28,14 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
 
   }
 
-  import reactivemongo.api.commands.bson.BSONCountCommand.{ Count, CountResult }
-
   def find(tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel] = {
 
     val query =  if(tag.isDefined) Json.obj("tags" -> tag) else Json.obj()
 
-    collection.runCommand(Count(query)).flatMap(result => {
+    collection.count(Some(query)).flatMap(count => {
       collection.find(query).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit).map(data =>
         TextPaginatedModel(
-          PaginationModel(limit, version, result.count),
+          PaginationModel(limit, version, count),
           data
         )
       )
@@ -54,10 +52,10 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
     }
     val mainQuery = query ++ Json.obj("text" -> Json.obj("$regex" -> q))
 
-    collection.runCommand(Count(mainQuery)).flatMap(result => {
+    collection.count(Some(mainQuery)).flatMap(count => {
       collection.find(mainQuery).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit).map(data =>
         TextPaginatedModel(
-          PaginationModel(limit, version, result.count),
+          PaginationModel(limit, version, count),
           data
         )
       )

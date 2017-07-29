@@ -10,7 +10,7 @@ POST    /tags                                         controllers.APIController.
 
 GET     /texts                                        controllers.APIController.getTexts(tag: Option[String], version: Option[Int], limit: Option[Int])
 
-GET     /texts/search                                 controllers.APIController.searchTexts(q: String, tag: Option[String])
+GET     /texts/search                                 controllers.APIController.searchTexts(q: String, tag: Option[String], version: Option[Int], limit: Option[Int])
 
 GET     /texts/:textId                                controllers.APIController.getText(textId: String)
 

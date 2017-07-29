@@ -3,23 +3,16 @@ package models
 import play.api.libs.json.Json
 
 /**
-  * Created by jyothi on 29/7/17.
+  * Created by jyothi on 24/6/17.
   */
-object MiscModel {
+case class TagModel( _id: String, name: String, description: Option[String])
 
+object TagModel {
+  implicit val tagModel = Json.format[TagModel]
 }
 
-case class PaginationModel(limit: Int, version: Int, total: Int)
+case class TagRequestModel(name: String, description: Option[String])
 
-object PaginationModel {
-  implicit val paginationModelFormat = Json.format[PaginationModel]
-}
-
-case class TextPaginatedModel(meta: PaginationModel, texts: List[TextModel])
-
-object TextPaginatedModel {
-  implicit val textPaginatedModelFormat = Json.format[TextPaginatedModel]
-
-  def empty = TextPaginatedModel(PaginationModel(0, 0, 0), List.empty[TextModel])
-
+object TagRequestModel {
+  implicit val tagRequestModel = Json.format[TagRequestModel]
 }

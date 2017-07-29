@@ -53,8 +53,8 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
     textDao.find(tagId, version, limit)
   }
 
-  def searchTexts(q: String, tag: Option[String]) = {
-    textDao.search(q, tag)
+  def searchTexts(q: String, tag: Option[String], version: Int, limit: Int) = {
+    textDao.search(q, tag, version, limit)
   }
 
   def insertText(textRequestModel: TextRequestModel) = {
