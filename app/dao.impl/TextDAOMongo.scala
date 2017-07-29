@@ -50,7 +50,8 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
       case Some(data) => Json.obj("tag" -> data)
       case None => Json.obj()
     }
-    val mainQuery = query ++ Json.obj("text" -> Json.obj("$regex" -> q))
+
+    val mainQuery = query ++ Json.obj("$text" -> Json.obj("$search" -> q))
 
     collection.count(Some(mainQuery)).flatMap(count => {
       collection.find(mainQuery).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit).map(data =>
