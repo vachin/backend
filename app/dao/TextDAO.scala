@@ -1,6 +1,6 @@
 package  dao
 
-import models.{TagWithCount, TextModel}
+import models.{TagWithCount, TextModel, TextPaginatedModel}
 
 import scala.concurrent.Future
 
@@ -8,9 +8,9 @@ trait TextDAO {
 
   def find(textId: String): Future[Option[TextModel]]
 
-  def find(tag: Option[String], version: Int, limit: Int): Future[List[TextModel]]
+  def find(tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel]
 
-  def search(q: String, tag: Option[String]): Future[List[TextModel]]
+  def search(q: String, tag: Option[String], version: Int, limit: Int): Future[List[TextPaginatedModel]]
 
   def insert(textModel: TextModel): Future[Boolean]
 

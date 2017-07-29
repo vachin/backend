@@ -1,6 +1,6 @@
 package dao.impl
 
-import models.{TagWithCount, TextModel, TextRequestModel}
+import models._
 import dao.TextDAO
 import org.slf4j.Logger
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
@@ -28,22 +28,40 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
 
   }
 
-  def find(tag: Option[String], version: Int, limit: Int): Future[List[TextModel]] = {
+  import reactivemongo.api.commands.bson.BSONCountCommand.{ Count, CountResult }
+
+  def find(tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel] = {
 
     val query =  if(tag.isDefined) Json.obj("tags" -> tag) else Json.obj()
-    collection.find(query).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit)
+
+    collection.runCommand(Count(query)).flatMap(result => {
+      collection.find(query).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit).map(data =>
+        TextPaginatedModel(
+          PaginationModel(limit, version, result.count),
+          data
+        )
+      )
+    })
 
   }
 
 
-  override def search(q: String, tag: Option[String]): Future[List[TextModel]] = {
+  override def search(q: String, tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel] = {
 
     val query = tag match {
       case Some(data) => Json.obj("tag" -> data)
       case None => Json.obj()
     }
-    val mainQuery = query ++ Json.obj("$text" -> Json.obj("$search" -> q))
-    collection.find(mainQuery).cursor[TextModel]().collect[List]()
+    val mainQuery = query ++ Json.obj("text" -> Json.obj("$regex" -> q))
+
+    collection.runCommand(Count(mainQuery)).flatMap(result => {
+      collection.find(mainQuery).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit).map(data =>
+        TextPaginatedModel(
+          PaginationModel(limit, version, result.count),
+          data
+        )
+      )
+    })
 
   }
 
