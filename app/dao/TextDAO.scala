@@ -18,6 +18,6 @@ trait TextDAO {
 
   def updateViews(textId: String, viewCount: Int = 1): Future[Boolean]
 
-  def findTagsWithCount(version: Int, limit: Int): Future[List[TagWithCount]]
+  def findTagsWithCount(version: Option[Int], limit: Option[Int]): Future[List[TagWithCount]]
 
 }

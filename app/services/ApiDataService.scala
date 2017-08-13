@@ -20,7 +20,7 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
   }
 
   def findTagsWithCount(version: Option[Int], limit: Option[Int]) = {
-    textDao.findTagsWithCount(version.getOrElse(1), limit.getOrElse(20))
+    textDao.findTagsWithCount(version, limit)
   }
 
   def searchTags(q: String) = {

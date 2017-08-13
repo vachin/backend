@@ -99,7 +99,7 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
 
   }
 
-  override def findTagsWithCount(version: Int, limit: Int): Future[List[TagWithCount]] = {
+  override def findTagsWithCount(version: Option[Int], limit: Option[Int]): Future[List[TagWithCount]] = { //TODO: Implement versioning
 
     val runner = Command.run(JSONSerializationPack)
 
