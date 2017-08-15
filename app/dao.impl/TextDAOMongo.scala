@@ -31,9 +31,10 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
   def find(tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel] = {
 
     val query =  if(tag.isDefined) Json.obj("tags" -> tag) else Json.obj()
+    val sortQuery = Json.obj("views" -> -1)
 
     collection.count(Some(query)).flatMap(count => {
-      collection.find(query).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit).map(data =>
+      collection.find(query).sort(sortQuery).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit).map(data =>
         TextPaginatedModel(
           PaginationModel(limit, version, count),
           data
