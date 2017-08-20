@@ -45,14 +45,19 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
   }
 
 
-  override def search(q: String, tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel] = {
+  override def search(q: String, tag: Option[String], version: Int, limit: Int, words: Option[String]): Future[TextPaginatedModel] = {
 
     val query = tag match {
       case Some(data) => Json.obj("tag" -> data)
       case None => Json.obj()
     }
 
-    val mainQuery = query ++ Json.obj("$text" -> Json.obj("$search" -> q))
+    val searchQuery = words match {
+      case Some(word) =>  Json.obj("$text" -> Json.obj("$search" -> q))
+      case None => Json.obj("text" -> Json.obj("$regex" -> q, "$options" -> "si"))
+    }
+
+    val mainQuery = query ++ searchQuery
 
     collection.count(Some(mainQuery)).flatMap(count => {
       collection.find(mainQuery).options(QueryOpts(skipN = (version - 1) * limit)).cursor[TextModel]().collect[List](limit).map(data =>
