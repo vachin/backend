@@ -133,7 +133,7 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
 
     collection.distinct[String, List](tagsKey).map{ tags =>
       tags.map(tag =>
-        TagModel(tag, "", None)
+        TagModel(tag, tag.replaceAll("-", " ").toUpperCase, None)
       )
     }
 
