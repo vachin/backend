@@ -12,7 +12,8 @@ import scala.concurrent.Future
 class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
 
   def getTags() = {
-    tagDao.find()
+    textDao.findTags(None, None) //FIXME: not from here
+    //tagDao.find()
   }
 
   def findTag(tag: String) = {

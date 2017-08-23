@@ -127,4 +127,16 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
 
   }
 
+  override def findTags(version: Option[Int], limit: Option[Int]): Future[List[TagModel]] = {
+
+    val tagsKey = "tags"
+
+    collection.distinct[String, List](tagsKey).map{ tags =>
+      tags.map(tag =>
+        TagModel(tag, "", None)
+      )
+    }
+
+  }
+
 }
