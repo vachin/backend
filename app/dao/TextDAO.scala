@@ -8,6 +8,8 @@ trait TextDAO {
 
   def find(textId: String): Future[Option[TextModel]]
 
+  def remove(textId: String): Future[Boolean]
+
   def find(tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel]
 
   def search(q: String, tag: Option[String], version: Int, limit: Int, words: Option[String]): Future[TextPaginatedModel]

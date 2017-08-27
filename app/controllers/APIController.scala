@@ -111,7 +111,20 @@ class APIController(dataService: ApiDataService, logger: Logger) extends Control
     }
   }
 
-
+  def updateText(textId: String) = Action.async(parse.json) { implicit request =>
+    val textRequestModelOpt = request.body.validate[TextRequestModel]
+    val textRequestModel = textRequestModelOpt match {
+      case error: JsError => logger.warn("Errors: " + JsError.toJson(error)); None
+      case model: JsSuccess[_] => Some(model.get.asInstanceOf[TextRequestModel])
+    }
+    if(textRequestModel.isDefined) {
+      dataService.updateText(textId, textRequestModel.get).map(result =>
+        Ok(Json.toJson(result)).withHeaders("access-control-allow-origin" -> "*")
+      )
+    }else{
+      Future(BadRequest.withHeaders("access-control-allow-origin" -> "*"))
+    }
+  }
 
   def options(path: String) = Action { request =>
     Ok.withHeaders(ACCESS_CONTROL_ALLOW_HEADERS -> Seq(AUTHORIZATION, CONTENT_TYPE, "Target-URL").mkString(","))

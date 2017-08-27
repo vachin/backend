@@ -30,13 +30,13 @@ object TextRequestModel {
   implicit val textRequestModelFormat = Json.format[TextRequestModel]
 
   def getTextId(text: String): String = {
-    val strippedText = text.replaceAll("[^a-zA-Z\\d\\s\\t\\n\\r:]", "").replaceAll(" ", "-").toLowerCase
+    val strippedText = text.replaceAll("[^a-zA-Z\\d :]", "").replaceAll("\\s+", "-").toLowerCase
     val stripLength = if(strippedText.length > 120) 120 else strippedText.length
     strippedText.substring(0, stripLength)
   }
 
   def toTextModel(textRequestModel: TextRequestModel): TextModel = {
-    TextModel(getTextId(textRequestModel.text), textRequestModel.text, 0, textRequestModel.tags, textRequestModel.by, textRequestModel.user)
+    TextModel(getTextId(textRequestModel.text), textRequestModel.text.trim, 0, textRequestModel.tags, textRequestModel.by, textRequestModel.user)
   }
 
 }

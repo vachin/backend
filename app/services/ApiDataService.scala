@@ -62,9 +62,7 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
     val textId = TextRequestModel.getTextId(textRequestModel.text)
     textDao.find(textId).flatMap(someTextModel => {
       if(someTextModel.isDefined){
-        Future{
-          ""
-        }
+        Future("")
       }else{
         textDao.insert(TextRequestModel.toTextModel(textRequestModel)).map(inserted =>
           if(inserted){
@@ -77,6 +75,15 @@ class ApiDataService(textDao: TextDAO, tagDao: TagDAO, logger: Logger) {
     })
   }
 
-
+  def updateText(textId: String, textRequestModel: TextRequestModel) = {
+    val textModel = TextRequestModel.toTextModel(textRequestModel)
+    textDao.update(textId, textModel).map(inserted =>
+      if(inserted){
+        textModel._id
+      }else{
+        ""
+      }
+    )
+  }
 
 }

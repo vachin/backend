@@ -28,7 +28,7 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
 
   }
 
-  def find(tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel] = {
+  override def find(tag: Option[String], version: Int, limit: Int): Future[TextPaginatedModel] = {
 
     val query =  if(tag.isDefined) Json.obj("tags" -> tag) else Json.obj()
     val sortQuery = Json.obj("views" -> -1)
@@ -88,10 +88,15 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
   override def update(textId: String, textModel: TextModel): Future[Boolean] = {
 
     val query = Json.obj("_id" -> textId)
-    val updater = Json.toJson(textModel).as[JsObject]
-    collection.update(query, updater, multi = true).map { lastError =>
-      lastError.ok
-    }
+    find(textId).flatMap(optTextModel => {
+      if(optTextModel.isDefined){
+        remove(textId) //removing existing document
+        val newTextModel = TextModel(textModel._id, textModel.text, optTextModel.get.views, textModel.tags, textModel.by, textModel.user)
+        insert(newTextModel)
+      }else{
+        Future(false)
+      }
+    })
 
   }
 
@@ -135,6 +140,16 @@ class TextDAOMongo(val connection: MongoConnection, val dbName: String, val logg
       tags.map(tag =>
         TagModel(tag, tag.replaceAll("-", " ").toUpperCase, None)
       )
+    }
+
+  }
+
+  override def remove(textId: String): Future[Boolean] = {
+
+    val query =  Json.obj("_id" -> textId)
+    collection.remove(query).map { lastError =>
+      logger.info("Message deleted with Id", textId)
+      lastError.ok
     }
 
   }

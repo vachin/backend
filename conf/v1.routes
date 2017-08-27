@@ -16,6 +16,8 @@ GET     /texts/:textId                                controllers.APIController.
 
 POST    /texts                                        controllers.APIController.insertText
 
+PUT     /texts                                        controllers.APIController.updateText(textId: String)
+
 GET     /tag-counts                                   controllers.APIController.getTagCounts(version: Option[Int], limit: Option[Int])
 
 #preflight route for browser in CORS
